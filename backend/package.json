@@ -1,0 +1,17 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "a modern preparation app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node",
+    "backend",
+    "interview",
+    "mock"
+  ],
+  "author": "Dhairya kaithwar",
+  "license": "ISC"
+}
