@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
+import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { setCredentials } from '../../redux/slices/authSlice';
+import { useNavigate } from 'react-router-dom';
 
 
 const Signin = () => {
@@ -7,11 +11,40 @@ const Signin = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
   
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
       e.preventDefault();
-      // Handle sign in logic here
+      try {
+        const res = await axios.post(
+          "http://localhost:4000/api/v1/users/login",
+          {
+            email,          
+            password,
+          },
+          {
+            withCredentials: true, 
+            headers: {
+              "Content-Type": "application/json", 
+            },
+          }
+        );
+        console.log(res)
+        dispatch(setCredentials(res.data.data));
+        alert(`user : ${res.data.data.user.fullName} logged in successfully`)
+        setTimeout(() => {
+          
+        }, 1000);
+        navigate('/'); // redirect to home
+
+      } catch (err) {
+        console.error("Login failed:", err.response?.data?.message || err.message);
+        alert("Login failed: " + (err.response?.data?.message || "Unknown error"));
+      }
     };
+    
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-200 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">

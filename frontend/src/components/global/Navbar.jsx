@@ -1,10 +1,32 @@
 import React, { useState } from 'react'
 import { Menu, X } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../../redux/slices/authSlice';
+import { useNavigate } from 'react-router-dom';
 
 
 const Navbar = () => {
 
-    const [isMenuOpen,setIsMenuOpen]=useState(false);
+  const dispatch = useDispatch();
+
+  const isUser = useSelector((state)=> state.auth.user);
+  const navigate = useNavigate();
+
+  const handleLogout = ()=>{
+    try {
+      dispatch(logout());
+      alert("user logged out")
+      setTimeout(() => {
+        location.reload()
+      }, 2000);
+    } catch (error) {
+      throw new Error("error while logout");
+      
+    }
+  }
+
+
+  const [isMenuOpen,setIsMenuOpen]=useState(false);
   return (
     <nav className=" mx-auto bg-indigo-600/90  sm:py-4">
       <div className="max-w-4xl  sm:rounded-4xl bg-white  mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,9 +41,13 @@ const Navbar = () => {
             <a href="#" className="text-gray-600 hover:text-indigo-500">Random Match</a>
             <a href="#" className="text-gray-600 hover:text-indigo-500">Pricing</a>
             <a href="#" className="text-gray-600 hover:text-indigo-500">About</a>
-            <button className="bg-indigo-600 text-white px-4 py-2 rounded-3xl hover:bg-indigo-700 transition">
+            {!isUser && <button className="bg-indigo-600 text-white px-4 py-2 rounded-3xl hover:bg-indigo-700 transition" onClick={()=>navigate('/login')}>
               Sign In
-            </button>
+            </button>}
+
+            {isUser && <button className="bg-indigo-600 text-white px-4 py-2 rounded-3xl hover:bg-indigo-700 transition" onClick={handleLogout}>
+              Log Out
+            </button>}
           </div>
 
           {/* Mobile menu button */}
