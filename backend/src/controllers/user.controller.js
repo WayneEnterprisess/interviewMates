@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 
+//Register User
 const registerUser= asyncHandler(async (req,res)=>{
     const {fullName, email, password, domain}=req.body;
 
@@ -46,6 +47,34 @@ const registerUser= asyncHandler(async (req,res)=>{
     console.log("user found")
     return res.status(201).json({userCreated});
 })
+
+
+//User Login
+const loginUser = asyncHandler(async (req,res)=>{
+    const {email,password} = req.body;
+
+    //check for fields
+    if(!email || !password) {
+        throw new ApiError(500, "All fields are mandatory");
+    }
+
+    //find user
+    const user = await User.findOne({email});
+    if(!user){
+        throw new ApiError(500, "User not found");
+    }
+
+    //check for password
+    const isPassword = await User.isPasswordCorrect(password);
+    if(!isPassword){
+        throw new ApiError(500, "Wrong password");
+    }
+
+    
+
+})
+
+
 
 
 export default registerUser;
