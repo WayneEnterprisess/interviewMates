@@ -28,7 +28,7 @@ const Navbar = () => {
 
   const [isMenuOpen,setIsMenuOpen]=useState(false);
   return (
-    <nav className=" mx-auto bg-indigo-600/90  sm:py-4">
+    <nav className=" mx-auto bg-indigo-600/90 rounded-b-4xl  sm:py-4">
       <div className="max-w-4xl  sm:rounded-4xl bg-white  mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
