@@ -18,7 +18,6 @@ const userSchema = new Schema(
     },
     refreshToken: {
       type: String,
-      required: true,
     },
     bio: {
       type: String,
@@ -32,11 +31,11 @@ const userSchema = new Schema(
       type: Number,
       default: 0,
     },
-    domains: {
-      type: [String],
-      default: [],
-      required: true,
-    },
+    domain: {
+        type: [String],
+        required: true
+      },
+    
     interviewGiven: {
       type: Number,
       default: 0,

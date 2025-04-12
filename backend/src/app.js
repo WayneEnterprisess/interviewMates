@@ -16,6 +16,12 @@ app.use(
     })
 );
 app.use(cookieParser());
+
+
+//routes declaration
+import userRouter from './routes/user.route.js'
+
+app.use('/api/users',userRouter);
   
 
 
