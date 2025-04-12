@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User, ArrowRight, X } from 'lucide-react';
+import axios from 'axios';
 
 const DOMAINS = [
   { id: 1, name: 'Frontend Development',  },
@@ -14,15 +15,18 @@ const DOMAINS = [
   { id: 10, name: 'Security',  },
 ];
 
-export function SignUpMultiStep() {
+const SignUpMultiStep = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
+    bio: '',
     selectedDomains: [],
   });
+
+
 
   const handleDomainToggle = (domain) => {
     setFormData(prev => ({
@@ -33,12 +37,24 @@ export function SignUpMultiStep() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if(formData.password!==formData.confirmPassword) return alert("Both passwords must be same")
     if (step === 1) {
       setStep(2);
     } else {
       // Handle final form submission
+      const res = await axios.post('http://localhost:8000/api/users/register',
+        {
+          fullName:formData.fullName,
+          password:formData.password,
+          email:formData.email,
+          bio:formData.bio
+
+        }
+      )
+
+
       console.log('Form submitted:', formData);
     }
   };
@@ -206,3 +222,5 @@ export function SignUpMultiStep() {
     </div>
   );
 }
+
+export default SignUpMultiStep
