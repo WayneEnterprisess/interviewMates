@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User, ArrowRight, X } from 'lucide-react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const DOMAINS = [
   { id: 1, name: 'Frontend Development',  },
@@ -16,6 +17,9 @@ const DOMAINS = [
 ];
 
 const SignUpMultiStep = () => {
+
+  const navigate = useNavigate();
+
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     fullName: '',
@@ -38,24 +42,37 @@ const SignUpMultiStep = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if(formData.password!==formData.confirmPassword) return alert("Both passwords must be same")
-    if (step === 1) {
-      setStep(2);
-    } else {
-      // Handle final form submission
-      const res = await axios.post('http://localhost:8000/api/users/register',
-        {
-          fullName:formData.fullName,
-          password:formData.password,
-          email:formData.email,
-          bio:formData.bio
-
-        }
-      )
-
-
-      console.log('Form submitted:', formData);
+    try {
+      e.preventDefault();
+      if(formData.password!==formData.confirmPassword) return alert("Both passwords must be same")
+      if (step === 1) {
+        setStep(2);
+      } else {
+        // Handle final form submission
+        const res = await axios.post('http://localhost:8000/api/users/register',
+          {
+            fullName:formData.fullName,
+            password:formData.password,
+            email:formData.email,
+            bio:formData.bio,
+            domain:formData.selectedDomains
+  
+          },
+          {
+            withCredentials: true, 
+            headers: {
+              "Content-Type": "application/json", 
+            },
+          }
+        )
+  
+        navigate('/userprofile');
+  
+        console.log('Form submitted:', formData);
+      }
+    } catch (err) {
+      throw new Error("error while signing up",err);
+      
     }
   };
 

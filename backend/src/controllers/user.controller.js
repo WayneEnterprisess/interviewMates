@@ -17,12 +17,15 @@ const registerUser= asyncHandler(async (req,res)=>{
         throw new ApiError(500, "Some field is not provided");
     }
 
+    console.log("fields checked")
+
     //user exists or not
     const existedUser = await User.findOne({email});
     if(existedUser) {
         throw new ApiError(500, "User Alread exists...");
     }
 
+    console.log("user exists")
 
     //create user
     const user = await User.create({
@@ -32,11 +35,15 @@ const registerUser= asyncHandler(async (req,res)=>{
         domain
     })
 
+    console.log("user created")
+
     //check user created or not
     const userCreated = await User.findById(user._id).select("-password -refreshToken")
     if(!userCreated){
         throw new ApiError(500, "error while creating user");
     }
+
+    console.log("user found")
     return res.status(201).json({userCreated});
 })
 
