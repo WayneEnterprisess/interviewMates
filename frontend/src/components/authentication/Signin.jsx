@@ -33,7 +33,7 @@ const Signin = () => {
         );
         console.log(res)
         dispatch(setCredentials(res.data.data));
-        alert(`user : ${res.data.data.user.fullName} logged in successfully`)
+        alert(`user  logged in successfully`)
         setTimeout(() => {
           
         }, 1000);

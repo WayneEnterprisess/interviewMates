@@ -2,7 +2,21 @@ import mongoose from "mongoose";
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
+
+//create access and refresh tokens
+const createAccessAndRefreshTokens = async (userID)=>{
+    const user = await User.findById(userID)
+
+    const accessToken = await user.generateAccessToken();
+    const refreshToken = await user.generateRefreshToken();
+
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+
+    return {accessToken,refreshToken};
+}
 
 //Register User
 const registerUser= asyncHandler(async (req,res)=>{
@@ -63,18 +77,36 @@ const loginUser = asyncHandler(async (req,res)=>{
     if(!user){
         throw new ApiError(500, "User not found");
     }
-
+    console.log("user found")
     //check for password
-    const isPassword = await User.isPasswordCorrect(password);
+    const isPassword = await user.isPasswordCorrect(password);
     if(!isPassword){
         throw new ApiError(500, "Wrong password");
     }
+    console.log("password checked")
 
+    //generate access and refresh tokens
+    const {accessToken, refreshtoken}= await createAccessAndRefreshTokens(user._id); 
     
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+
+    const options = {
+        httpOnly:true,
+        secure:true
+    }
+
+    return res.status(200)
+    .cookie("accessToken",accessToken,options)
+    .cookie("refreshtoken",refreshtoken,options)
+    .json({
+        success:true,
+        message:"user logged in successfully",
+        data:loggedInUser,user
+    })
 
 })
 
 
 
 
-export default registerUser;
+export {registerUser,loginUser};
