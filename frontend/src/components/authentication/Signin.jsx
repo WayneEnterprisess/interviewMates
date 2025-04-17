@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 import axios from 'axios';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setCredentials } from '../../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,7 +14,7 @@ const Signin = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-  
+    const userDetails = useSelector((state)=>state.auth.user)
     const handleSubmit = async (e) => {
       e.preventDefault();
       try {
@@ -31,13 +31,17 @@ const Signin = () => {
             },
           }
         );
-        console.log(res)
-        dispatch(setCredentials(res.data.data));
+        
+        console.log("login response: ",res)
+
+        dispatch(setCredentials({user: res.data.data}));
+        console.log(userDetails)
+        
         alert(`user  logged in successfully`)
         setTimeout(() => {
           
         }, 1000);
-        navigate('/'); // redirect to home
+        navigate('/userprofile'); 
 
       } catch (err) {
         console.error("Login failed:", err.response?.data?.message || err.message);

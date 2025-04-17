@@ -101,12 +101,34 @@ const loginUser = asyncHandler(async (req,res)=>{
     .json({
         success:true,
         message:"user logged in successfully",
-        data:loggedInUser,user
+        data:loggedInUser
     })
 
 })
 
 
 
+//Get user details
+const getUserDetails = asyncHandler( async (req, res) => {
+    // Check if user is authenticated (logged in)
+    if (!req.user) {
+        throw new ApiError(401, "User not logged in");
+    }
 
-export {registerUser,loginUser};
+    // Take user from current session using id
+    const user = await User.findById(req.user._id).select("-password -refreshToken");
+
+    if (!user) {
+        throw new ApiError(404, "User Not Found");
+    }
+
+    return res.status(200)
+        .json({
+            success: true,
+            data: user,
+        });
+});
+
+
+
+export {registerUser,loginUser,getUserDetails};

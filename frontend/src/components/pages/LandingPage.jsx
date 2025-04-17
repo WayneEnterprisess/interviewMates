@@ -41,7 +41,7 @@ const LandingPage = () => {
         </div>
 
         {/* Features Grid */}
-        <div className="max-w-7xl bg-white my-8 rounded-3xl shadow-md mx-auto px-4 sm:px-6 lg:px-8 py-15">
+        <div className="max-w-7xl bg-white my-8 rounded-b-3xl shadow-md mx-auto px-4 sm:px-6 lg:px-8 py-15">
         <div className="text-center mb-15">
               <h2 className="text-3xl font-bold text-gray-900 mb-4">Schedule your Interview</h2>
               <p className="text-gray-600">Select On the Basis Of Your Needs</p>
