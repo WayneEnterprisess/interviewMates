@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCredentials } from '../../redux/slices/authSlice';
+import { setCredentials, setLoading } from '../../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -14,9 +14,21 @@ const Signin = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const userDetails = useSelector((state)=>state.auth.user)
+    const isAuthenticated = useSelector((state)=>state.auth.isAuthenticated)
+    const authState = useSelector((state)=>state.auth)
+    const isLoading = useSelector((state)=>state.auth.loading)
+
+    useEffect(() => {
+      if (isAuthenticated && !isLoading) {
+        console.log("inside login useEffect")
+        navigate('/userprofile');
+      }
+    }, [isAuthenticated, navigate,isLoading]);
+    
+    
     const handleSubmit = async (e) => {
       e.preventDefault();
+      dispatch(setLoading(true))
       try {
         const res = await axios.post(
           "http://localhost:8000/api/users/login",
@@ -31,21 +43,18 @@ const Signin = () => {
             },
           }
         );
-        
+        dispatch(setCredentials({user:res.data.data}));
+        localStorage.setItem("isAuthenticated", "true");
+        localStorage.setItem("user", JSON.stringify(res.data.data.user));
+
+        console.log("user state res",authState)
         console.log("login response: ",res)
-
-        dispatch(setCredentials({user: res.data.data}));
-        console.log(userDetails)
-        
-        alert(`user  logged in successfully`)
-        setTimeout(() => {
-          
-        }, 1000);
-        navigate('/userprofile'); 
-
+         
       } catch (err) {
         console.error("Login failed:", err.response?.data?.message || err.message);
         alert("Login failed: " + (err.response?.data?.message || "Unknown error"));
+      }finally{
+        dispatch(setLoading(false))
       }
     };
     

@@ -3,6 +3,7 @@ import { Menu, X } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 
 const Navbar = () => {
@@ -12,13 +13,15 @@ const Navbar = () => {
   const isUser = useSelector((state)=> state.auth.user);
   const navigate = useNavigate();
 
-  const handleLogout = ()=>{
+  const handleLogout = async ()=>{
     try {
-      dispatch(logout());
-      alert("user logged out")
-      setTimeout(() => {
-        location.reload()
-      }, 2000);
+      const res = await axios.post('http://localhost:8000/api/users/logout', {}, {
+        withCredentials: true,
+      })
+      dispatch(logout()); 
+      localStorage.clear();
+      console.log("user logged out",res)
+      navigate('/login')
     } catch (error) {
       throw new Error("error while logout");
       
@@ -39,7 +42,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-8">
             <a href="#" className="text-gray-600 hover:text-indigo-500">Find Interviewers</a>
             <a href="#" className="text-gray-600 hover:text-indigo-500">Random Match</a>
-            <a href="#" className="text-gray-600 hover:text-indigo-500">Pricing</a>
+            <p onClick={()=>navigate('/userprofile')} className="text-gray-600 hover:text-indigo-500">Profile</p>
             <a href="#" className="text-gray-600 hover:text-indigo-500">About</a>
             {!isUser && <button className="bg-indigo-600 text-white px-4 py-2 rounded-3xl hover:bg-indigo-700 transition" onClick={()=>navigate('/login')}>
               Sign In
@@ -78,10 +81,10 @@ const Navbar = () => {
                 Random Match
               </a>
               <a
-                href="#"
+                href="/userProfile"
                 className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
               >
-                Pricing
+                Profile
               </a>
               <a
                 href="#"

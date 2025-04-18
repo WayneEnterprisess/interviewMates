@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 
 const LandingPage = () => {
     
-
+  const isAuthenticated = useSelector((state)=>state.auth.isAuthenticated)
   
 
   return (
@@ -27,7 +27,7 @@ const LandingPage = () => {
                 Connect with expert interviewers or practice with peers. Your dream job awaits.
               </p>
               <div className="flex justify-center gap-4">
-                  <button className="bg-white cursor-pointer text-indigo-600/90 px-6 py-3 rounded-lg font-semibold hover:scale-105 active:scale-95 transition-transform duration-200 flex items-center gap-2 shadow-md"> 
+                  <button onClick={()=>console.log(isAuthenticated)} className="bg-white cursor-pointer text-indigo-600/90 px-6 py-3 rounded-lg font-semibold hover:scale-105 active:scale-95 transition-transform duration-200 flex items-center gap-2 shadow-md"> 
                   Get Started 
                   <ArrowRight size={20} />
                   </button>

@@ -5,6 +5,7 @@ import Navbar from '../global/Navbar';
 import Footer from '../global/Footer';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+
 const mockReviews = [
   {
     id: 1,
@@ -67,6 +68,7 @@ const mockRecentInterviews = [
 
 export function UserProfile() {
   const [activeTab, setActiveTab] = useState('interviewer');
+  const [expertise, setExpertise] = useState([])
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [interviewRequest, setInterviewRequest] = useState({
     domain: '',
@@ -76,27 +78,12 @@ export function UserProfile() {
 
   const user = useSelector((state)=>state.auth.user)
 
-console.log(user)
-  
+  console.log("from user profile ",user)
+  console.log("full name ",user.fullName)
 
-  // const getUserData = async () => {
-  //   try {
-      
-  //     const res = await axios.get('http://localhost:8000/api/users/me', {
-  //       withCredentials: true, // This ensures cookies are sent with the request
-  //     });
-  //     console.log(res);
-  //   } catch (e) {
-  //     console.error('Error fetching user data:', e.response?.data || e.message);
-  //   }
-  // };
-  
-  // useEffect(() => {
-  //   getUserData();
-  // }, []);
-  
-
-  
+  useEffect(()=>{
+    setExpertise(user.domain)
+  })
   
 
   const userDomains = [
@@ -137,7 +124,7 @@ console.log(user)
 
                 <div className="flex-1 w-full">
                   <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 gap-4">
-                    <h1 className="text-3xl font-bold text-gray-900">Dhairya Kaithwar</h1>
+                    <h1 className="text-3xl font-bold text-gray-900">{user.fullName}</h1>
                     <button
                       onClick={()=>console.log(user)}
                       className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition flex items-center gap-2 w-full md:w-auto justify-center"
@@ -151,7 +138,7 @@ console.log(user)
                     <div>
                       <h2 className="text-sm font-semibold text-gray-700 mb-2">Expertise</h2>
                       <div className="flex flex-wrap gap-2">
-                        {userDomains.map((domain) => (
+                        {expertise.map((domain) => (
                           <span key={domain} className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium">
                             {domain}
                           </span>
