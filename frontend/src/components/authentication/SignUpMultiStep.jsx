@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Mail, Lock, User, ArrowRight, X } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../../utils/url';
 
 const DOMAINS = [
   { id: 1, name: 'Frontend Development',  },
@@ -49,7 +50,7 @@ const SignUpMultiStep = () => {
         setStep(2);
       } else {
         // Handle final form submission
-        const res = await axios.post('http://localhost:8000/api/users/register',
+        const res = await axios.post(`${BASE_URL}/api/users/register`,
           {
             fullName:formData.fullName,
             password:formData.password,

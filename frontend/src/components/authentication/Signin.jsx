@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCredentials, setLoading } from '../../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../../utils/url';
 
 
 const Signin = () => {
@@ -31,7 +32,7 @@ const Signin = () => {
       dispatch(setLoading(true))
       try {
         const res = await axios.post(
-          "http://localhost:8000/api/users/login",
+          `${BASE_URL}/api/users/login`,
           {
             email,          
             password,
