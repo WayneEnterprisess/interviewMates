@@ -3,6 +3,7 @@ import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 
 //create access and refresh tokens
@@ -37,10 +38,10 @@ const registerUser= asyncHandler(async (req,res)=>{
     //user exists or not
     const existedUser = await User.findOne({email});
     if(existedUser) {
-        throw new ApiError(500, "User Alread exists...");
+        throw new ApiError(499, "User Alread exists...");
     }
 
-    console.log("user exists")
+    console.log("user does not exists")
 
     //create user
     const user = await User.create({
@@ -59,7 +60,12 @@ const registerUser= asyncHandler(async (req,res)=>{
     }
 
     console.log("user found")
-    return res.status(201).json({userCreated});
+    return res.status(200)
+    .json({
+        success:true,
+        message:"User Signed Up",
+        data:userCreated
+    })
 })
 
 
@@ -149,5 +155,43 @@ const logoutUser = asyncHandler(async (req,res)=>{
 })
 
 
+//Upload New Photo
+const uploadPhoto = asyncHandler( async (req,res)=>{
+    const userId = req.user._id; // Assuming you use a middleware to attach user info to req.user
 
-export {registerUser,loginUser,logoutUser,getUserDetails};
+  const avatarLocalFile = req.files?.avatar?.[0]?.path;
+
+  if (!avatarLocalFile) {
+    throw new ApiError(400, "No image provided");
+  }
+
+  let newAvatar = ""
+
+  if (avatarLocalFile) {
+    const avatarUpload = await uploadOnCloudinary(avatarLocalFile);
+    console.log("avatar object",avatarUpload)
+    if (!avatarUpload?.url) {
+      throw new ApiError(400, "Failed to upload avatar to cloudinary in url");
+    }
+    newAvatar = avatarUpload.url;
+  }
+
+  console.log(newAvatar)
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,{ 
+        $set:{
+            avatar:newAvatar
+        }
+    },
+    { new: true }
+  ).select("-password -refreshToken");
+
+  if (!updatedUser) {
+    throw new ApiError(500, "Error updating profile photos");
+  }
+
+  
+  return res.status(200).json({ updatedUser })
+})
+
+export {registerUser,loginUser,logoutUser,getUserDetails,uploadPhoto};

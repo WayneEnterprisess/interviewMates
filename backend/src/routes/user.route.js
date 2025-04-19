@@ -1,6 +1,7 @@
 import { Router } from "express";
-import {getUserDetails, loginUser, logoutUser, registerUser} from "../controllers/user.controller.js";
+import {getUserDetails, loginUser, logoutUser, registerUser, uploadPhoto} from "../controllers/user.controller.js";
 import { veriftJWT } from "../middlewares/auth.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js";
 
 
 const router= Router();
@@ -16,5 +17,16 @@ router.route('/logout').post(veriftJWT,logoutUser);
 
 //get user details
 router.route('/me').get(veriftJWT,getUserDetails)
+
+//change picture
+router.route('/uploadavatar').post(
+    veriftJWT,
+    upload.fields([{
+        name:'avatar',
+        maxCount:1
+    }])
+    ,
+    uploadPhoto);
+
 
 export default router

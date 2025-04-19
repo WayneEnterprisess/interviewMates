@@ -50,12 +50,12 @@ const SignUpMultiStep = () => {
         setStep(2);
       } else {
         // Handle final form submission
-        const res = await axios.post(`${BASE_URL}/api/users/register`,
+        console.log(formData)
+        await axios.post(`${BASE_URL}/api/users/register`,
           {
             fullName:formData.fullName,
             password:formData.password,
             email:formData.email,
-            bio:formData.bio,
             domain:formData.selectedDomains
   
           },
@@ -66,13 +66,15 @@ const SignUpMultiStep = () => {
             },
           }
         )
-  
-        navigate('/userprofile');
-  
         console.log('Form submitted:', formData);
+  
+        navigate('/login');
+  
       }
     } catch (err) {
-      throw new Error("error while signing up",err);
+      console.log(err)
+      console.error("Login failed:", err.response?.data?.message || err.message);
+        alert("Login failed: " + (err.response?.data?.message || "Unknown error"));
       
     }
   };

@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Camera, Star, Calendar, Clock, X, Plus, Video } from 'lucide-react';
 import DImage from '../../assets/dhairya.png'
 import Navbar from '../global/Navbar';
 import Footer from '../global/Footer';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { BASE_URL } from '../../utils/url';
+import { setCredentials } from '../../redux/slices/authSlice';
+import { Sidebar } from '../global/Sidebar';
 
 const mockReviews = [
   {
@@ -67,6 +70,8 @@ const mockRecentInterviews = [
 ];
 
 export function UserProfile() {
+
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('interviewer');
   const [expertise, setExpertise] = useState([])
   const [fullName, setFullName] = useState('')
@@ -80,8 +85,6 @@ export function UserProfile() {
   const user = useSelector((state)=>state.auth.user)
   const isAuthenticated = useSelector((state)=>state.auth.isAuthenticated)
 
-  // console.log("from user profile ",user)
-  // console.log("full name ",user.fullName)
 
   useEffect(()=>{
     if(isAuthenticated && user){
@@ -93,12 +96,35 @@ export function UserProfile() {
   },[isAuthenticated,user])
   
 
-  const userDomains = [
-    "Frontend Development",
-    "React",
-    "System Design",
-    "Cloud Architecture"
-  ];
+  const fileInputRef = useRef();
+
+  const handleAvatarChange = async (e)=>{
+    const file = e.target.files[0];
+    if(!file){
+      console.log("file not given by user")
+      return;
+    }
+    const formData = new FormData();
+    formData.append("avatar", file);
+    try {
+        const res = await axios.post(`${BASE_URL}/api/users/uploadavatar`,
+          formData,{
+            withCredentials:true,
+            headers : {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        const updatedUserAfImg = res.data.updatedUser
+        console.log("Uploaded and updated user: ", updatedUserAfImg);
+        dispatch(setCredentials({ user: updatedUserAfImg }));
+        localStorage.setItem("user", JSON.stringify(updatedUserAfImg));
+    } catch (err) {
+      console.error("Upload failed:", err.response?.data?.message || err.message);
+      alert("Upload failed. Please try again.");
+
+    }
+  }
 
   const handleRequestSubmit = (e) => {
     e.preventDefault();
@@ -109,6 +135,7 @@ export function UserProfile() {
   return (
     <>
     <Navbar/>
+    <Sidebar/>
     <div className="min-h-screen bg-gray-50">
       <div className="w-full">
         <div className="flex flex-col lg:flex-row gap-8 p-8">
@@ -116,12 +143,20 @@ export function UserProfile() {
           <div className="flex-grow">
             <div className="bg-white rounded-xl shadow-sm p-8 mb-8">
               <div className="flex flex-col md:flex-row items-start gap-8">
-                <div className="relative group">
+                <div className="relative group" onClick={() => fileInputRef.current?.click()} >
                   <div className="w-32 h-32 rounded-full overflow-hidden">
                     <img
-                      src={DImage}
+                      src={user?.avatar || DImage}//
                       alt="Profile"
                       className="w-full h-full object-cover"
+                    />
+                    <input
+                      type="file"
+                      id="avatar-upload"
+                      accept="image/*"
+                      className="hidden"
+                      ref={fileInputRef}
+                      onChange={handleAvatarChange}
                     />
                   </div>
                   <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
@@ -132,12 +167,12 @@ export function UserProfile() {
                 <div className="flex-1 w-full">
                   <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 gap-4">
                   {user ? (
-  <h1 className="text-3xl font-bold text-gray-900">{fullName}</h1>
-) : (
-  <h1 className="text-3xl font-bold text-gray-900">Loading...</h1>
-)}
+                    <h1 className="text-3xl font-bold text-gray-900">{fullName}</h1>
+                  ) : (
+                    <h1 className="text-3xl font-bold text-gray-900">Loading...</h1>
+                  )}
                     <button
-                      onClick={()=>console.log(user)}
+                      onClick={()=>setIsRequestModalOpen(true)}
                       className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition flex items-center gap-2 w-full md:w-auto justify-center"
                     >
                       <Plus size={20} />
@@ -330,7 +365,7 @@ export function UserProfile() {
                   required
                 >
                   <option value="">Select a domain</option>
-                  {userDomains.map((domain) => (
+                  {expertise.map((domain) => (
                     <option key={domain} value={domain}>
                       {domain}
                     </option>
