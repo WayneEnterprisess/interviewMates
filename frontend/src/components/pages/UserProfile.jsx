@@ -136,7 +136,7 @@ export function UserProfile() {
     <>
     <Navbar/>
     <Sidebar/>
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen md:ml-64 ml-0 bg-gray-50">
       <div className="w-full">
         <div className="flex flex-col lg:flex-row gap-8 p-8">
           {/* Left Column */}
@@ -419,7 +419,7 @@ export function UserProfile() {
         </div>
       )}
     </div>
-    <Footer/>   
+
     </>
   );
 }
