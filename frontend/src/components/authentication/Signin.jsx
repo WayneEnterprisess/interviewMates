@@ -1,5 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCredentials, setLoading } from '../../redux/slices/authSlice';
+import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../../utils/url';
 
 
 const Signin = () => {
@@ -7,11 +12,53 @@ const Signin = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
-  
-    const handleSubmit = (e) => {
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const isAuthenticated = useSelector((state)=>state.auth.isAuthenticated)
+    const authState = useSelector((state)=>state.auth)
+    const isLoading = useSelector((state)=>state.auth.loading)
+
+    useEffect(() => {
+      if (isAuthenticated && !isLoading) {
+        console.log("inside login useEffect")
+        navigate('/userprofile');
+      }
+    }, [isAuthenticated, navigate,isLoading]);
+    
+    
+    const handleSubmit = async (e) => {
       e.preventDefault();
-      // Handle sign in logic here
+      dispatch(setLoading(true))
+      try {
+        const res = await axios.post(
+          `${BASE_URL}/api/users/login`,
+          {
+            email,          
+            password,
+          },
+          {
+            withCredentials: true, 
+            headers: {
+              "Content-Type": "application/json", 
+            },
+          }
+        );
+        dispatch(setCredentials({user:res.data.data}));
+        localStorage.setItem("isAuthenticated", "true");
+        localStorage.setItem("user", JSON.stringify(res.data.data.user));
+
+        console.log("user state res",authState)
+        console.log("login response: ",res)
+         
+      } catch (err) {
+        console.error("Login failed:", err.response?.data?.message || err.message);
+        alert("Login failed: " + (err.response?.data?.message || "Unknown error"));
+      }finally{
+        dispatch(setLoading(false))
+      }
     };
+    
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-200 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">

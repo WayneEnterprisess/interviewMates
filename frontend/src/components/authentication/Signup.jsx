@@ -1,15 +1,48 @@
 import React, { useState } from 'react'
 import { Mail, Lock, User, ArrowRight } from 'lucide-react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 const Signup = () => {
     const [fullName, setFullName] = useState('');
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [avatar, setAvatar] = useState(''); 
+    const [coverImage, setcoverImage] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [agreeToTerms, setAgreeToTerms] = useState(false);
+    
+    const navigate = useNavigate();
   
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      // Handle sign up logic here
+    const handleSubmit = async (e) => {
+
+      try {
+        e.preventDefault();
+        if(password!=confirmPassword){
+          alert("both password should match");
+          return;
+        }
+        const res = await axios.post("http://localhost:4000/api/v1/users/register",
+          {
+            fullName,username,email,password,
+          },
+          {
+            withCredentials: true, 
+            headers: {
+              "Content-Type": "application/json", 
+            },
+          }
+        )
+        console.log(res)
+        setTimeout(() => {
+            
+        }, 1000);
+        alert("User created");
+        navigate('/login')
+      } catch (err) {
+        console.error("error while signing up",err);
+      }
+      
     };
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
@@ -41,7 +74,26 @@ const Signup = () => {
                 />
               </div>
             </div>
-
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+                Username
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <User className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  placeholder="Enter preffered username"
+                />
+              </div>
+            </div>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                 Email address
@@ -138,7 +190,7 @@ const Signup = () => {
 
           <div className="text-center text-sm">
             <span className="text-gray-600">Already have an account?</span>{' '}
-            <a href="/signin" className="font-medium text-indigo-600 hover:text-indigo-500">
+            <a href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
               Sign in instead
             </a>
           </div>
