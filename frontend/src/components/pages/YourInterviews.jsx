@@ -155,8 +155,8 @@ export function YourInterviews() {
   return (
     <>
     <Navbar/>
-    <Sidebar/>
-    <div className="min-h-screen bg-gray-50 md:ml-64 ml-0 py-12">
+    {/* <Sidebar/> */}
+    <div className="min-h-screen bg-gray-50  py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Upcoming Interviews */}
         <div className="mb-12">

@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Camera, Star, Calendar, Clock, X, Plus, Video } from 'lucide-react';
 import DImage from '../../assets/dhairya.png'
+import userImage from '../../assets/user.png'
+import userImage2 from '../../assets/person_13924070.png'
 import Navbar from '../global/Navbar';
 import Footer from '../global/Footer';
 import axios from 'axios';
@@ -135,8 +137,8 @@ export function UserProfile() {
   return (
     <>
     <Navbar/>
-    <Sidebar/>
-    <div className="min-h-screen md:ml-64 ml-0 bg-gray-50">
+    {/* <Sidebar/> */}
+    <div className="min-h-screen  bg-gray-50">
       <div className="w-full">
         <div className="flex flex-col lg:flex-row gap-8 p-8">
           {/* Left Column */}
@@ -146,9 +148,9 @@ export function UserProfile() {
                 <div className="relative group" onClick={() => fileInputRef.current?.click()} >
                   <div className="w-32 h-32 rounded-full overflow-hidden">
                     <img
-                      src={user?.avatar || DImage}//
+                      src={user?.avatar || userImage}//
                       alt="Profile"
-                      className="w-full h-full object-cover"
+                      className={`w-full h-full object-cover ${!user?.avatar ? "scale-50 ":""}`}
                     />
                     <input
                       type="file"

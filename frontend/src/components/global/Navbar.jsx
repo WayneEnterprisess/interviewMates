@@ -41,15 +41,15 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#" className="text-gray-600 hover:text-indigo-500">Find Interviewers</a>
+            <div onClick={()=>navigate('/userprofile')} className="text-gray-600 hover:text-indigo-500 hover:scale-105 transition-transform duration-100 cursor-pointer">Profile</div>
+            <div onClick={()=>navigate('/your-interviews')} className="text-gray-600 hover:text-indigo-500 hover:scale-105 transition-transform duration-100 cursor-pointer">Your Interviews</div>
             {/* <a href="#" className="text-gray-600 hover:text-indigo-500">Random Match</a> */}
-            <p onClick={()=>navigate('/userprofile')} className="text-gray-600 hover:text-indigo-500">Profile</p>
-            <a href="#" className="text-gray-600 hover:text-indigo-500">About</a>
-            {!isUser && <button className="bg-indigo-600 text-white px-4 py-2 rounded-3xl hover:bg-indigo-700 transition" onClick={()=>navigate('/login')}>
+            <div onClick={()=>navigate('/interview-requests')} className="text-gray-600 hover:text-indigo-500 hover:scale-105 transition-transform duration-100 cursor-pointer">Find Interviews</div>
+            {!isUser && <button className="bg-indigo-600 text-white px-4 py-2 rounded-3xl hover:bg-indigo-700 transition cursor-pointer" onClick={()=>navigate('/login')}>
               Sign In
             </button>}
 
-            {isUser && <button className="bg-indigo-600 text-white px-4 py-2 rounded-3xl hover:bg-indigo-700 transition" onClick={handleLogout}>
+            {isUser && <button className="bg-indigo-600 text-white px-4 py-2 rounded-3xl hover:bg-indigo-700 transition cursor-pointer" onClick={handleLogout}>
               Log Out
             </button>}
           </div>
@@ -68,34 +68,32 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1">
+            <div className="px-2   pt-2 pb-3 text-center space-y-3">
               <div
                 onClick={()=>navigate('/userprofile')}
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 mx-auto hover:text-gray-900 hover:bg-gray-200 bg-gray-50 "
               >
                 Profile
               </div>
               <div
                 onClick={()=>navigate('/your-interviews')}
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 mx-auto hover:text-gray-900 hover:bg-gray-200 bg-gray-50 "
               >
                 Your Interviews
               </div>
+              
               <div
-                onClick={()=>navigate('/')}
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                onClick={()=>navigate('/interview-requests')}
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 mx-auto hover:text-gray-900 hover:bg-gray-200 bg-gray-50 "
               >
-                Profile
+                Find Interviews
               </div>
-              <div
-                onClick={()=>navigate('/')}
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-              >
-                About
-              </div>
-              <button className="w-full mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition" onClick={()=>navigate("/login")}>
+              {!isUser && <button className="w-full mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 mx-auto  transition" onClick={()=>navigate("/login")}>
                 Sign In
-              </button>
+              </button>}
+              {isUser && <button className="w-full mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 mx-auto  transition" onClick={handleLogout}>
+                Logout
+              </button>}
             </div>
           </div>
         )}
