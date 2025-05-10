@@ -1,6 +1,7 @@
-import mongoose, { Schema } from 'mongoose'
+import mongoose, { Schema } from "mongoose";
 
-const interviewSchema = new Schema({
+const interviewSchema = new Schema(
+  {
     interviewer: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -12,46 +13,46 @@ const interviewSchema = new Schema({
     },
     scheduleTime: {
       type: Date,
-      required: true,
     },
     meetingLink: {
       type: String,
-      required: true,
     },
     status: {
-        type: String,
-        enum: ["Not Scheduled", "Scheduled", "Cancelled", "Completed"],
-        default: "Not Scheduled",
-        required: true,
-      },
-      
+      type: String,
+      enum: ["Not Scheduled", "Scheduled", "Cancelled", "Completed"],
+      default: "Not Scheduled",
+    },
+
     domain: {
-      type: String, 
+      type: String,
       required: true,
     },
     intervieweeAvailability: {
-        type: [
-          {
-            startTime: {
-              type: Date,
-              required: true
-            }
-          }
-        ],
-        default: []
-      },      
-      
+      type: [
+        {
+          date: {
+            type: Date,
+          },
+          startTime: [{
+            type: Date, 
+          }],
+            
+        },
+      ],
+      default: [],
+    },
+
     // Feedback references
     feedbackFromInterviewer: {
       type: Schema.Types.ObjectId,
-      ref: "Feedback"
+      ref: "Feedback",
     },
     feedbackFromInterviewee: {
       type: Schema.Types.ObjectId,
-      ref: "Feedback"
-    }
-  
-  }, { timestamps: true });
-  
+      ref: "Feedback",
+    },
+  },
+  { timestamps: true }
+);
 
-  export const Interview = mongoose.model("Interview",interviewSchema)
+export const Interview = mongoose.model("Interview", interviewSchema);

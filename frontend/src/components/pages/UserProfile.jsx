@@ -78,11 +78,19 @@ export function UserProfile() {
   const [expertise, setExpertise] = useState([])
   const [fullName, setFullName] = useState('')
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  // const [interviewRequest, setInterviewRequest] = useState({
+  //   domain: '',
+  //   dates: ['', '', ''],
+  //   timeSlot: ''
+  // });
   const [interviewRequest, setInterviewRequest] = useState({
-    domain: '',
-    dates: ['', '', ''],
-    timeSlot: ''
-  });
+  domain: '',
+  availability: [
+    { date: '', startTimes: [''] }
+  ]
+});
+
+
 
   const user = useSelector((state)=>state.auth.user)
   const isAuthenticated = useSelector((state)=>state.auth.isAuthenticated)
@@ -128,11 +136,35 @@ export function UserProfile() {
     }
   }
 
-  const handleRequestSubmit = (e) => {
-    e.preventDefault();
-    console.log('Interview request:', interviewRequest);
+  // const handleRequestSubmit = (e) => {
+  //   e.preventDefault();
+  //   console.log('Interview request:', interviewRequest);
+  //   setIsRequestModalOpen(false);
+  // };
+  const handleRequestSubmit = async (e) => {
+  e.preventDefault();
+  console.log('Formatted Interview Request:', interviewRequest);
+
+  try {
+    const res = await axios.post(
+      `${BASE_URL}/api/interview-requests/create-request`,
+      interviewRequest,
+      {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json', // Correct header for JSON
+        },
+      }
+    );
+    console.log('Interview request created:', res.data);
     setIsRequestModalOpen(false);
-  };
+  } catch (error) {
+    console.error('Error creating interview request:', error);
+    alert(error.response?.data?.message || 'Failed to create interview request.');
+  }
+};
+
+
 
   return (
     <>
@@ -340,86 +372,153 @@ export function UserProfile() {
 
       {/* Modal */}
       {isRequestModalOpen && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+  <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-xl p-6 max-w-md w-full">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold text-gray-900">Create Interview Request</h2>
+        <button
+          onClick={() => setIsRequestModalOpen(false)}
+          className="text-gray-500 hover:text-gray-700"
+        >
+          <X size={20} />
+        </button>
+      </div>
 
-          <div className="bg-white rounded-xl p-6 max-w-md w-full">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-gray-900">Create Interview Request</h2>
-              <button
-                onClick={() => setIsRequestModalOpen(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <form onSubmit={handleRequestSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Select Domain
-                </label>
-                <select
-                  value={interviewRequest.domain}
-                  onChange={(e) =>
-                    setInterviewRequest({ ...interviewRequest, domain: e.target.value })
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                  required
-                >
-                  <option value="">Select a domain</option>
-                  {expertise.map((domain) => (
-                    <option key={domain} value={domain}>
-                      {domain}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Available Dates (Max 3)
-                </label>
-                {interviewRequest.dates.map((date, index) => (
-                  <input
-                    key={index}
-                    type="date"
-                    value={date}
-                    onChange={(e) => {
-                      const newDates = [...interviewRequest.dates];
-                      newDates[index] = e.target.value;
-                      setInterviewRequest({ ...interviewRequest, dates: newDates });
-                    }}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 mb-2"
-                    required
-                  />
-                ))}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Preferred Time Slot
-                </label>
-                <input
-                  type="time"
-                  value={interviewRequest.timeSlot}
-                  onChange={(e) =>
-                    setInterviewRequest({ ...interviewRequest, timeSlot: e.target.value })
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition"
-              >
-                Submit Request
-              </button>
-            </form>
-          </div>
+      <form onSubmit={handleRequestSubmit} className="space-y-4">
+        {/* Domain */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Select Domain</label>
+          <select
+            value={interviewRequest.domain}
+            onChange={(e) =>
+              setInterviewRequest({ ...interviewRequest, domain: e.target.value })
+            }
+            className="w-full border border-gray-300 rounded-lg px-3 py-2"
+            required
+          >
+            <option value="">Select a domain</option>
+            {expertise.map((domain) => (
+              <option key={domain} value={domain}>
+                {domain}
+              </option>
+            ))}
+          </select>
         </div>
+
+        {/* Availability */}
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Availability (Max 3 Dates)
+  </label>
+  {interviewRequest.availability.map((slot, index) => (
+    <div key={index} className="mb-4 border p-3 rounded-md space-y-2 bg-gray-50">
+      {/* Date Input */}
+      <input
+        type="date"
+        value={slot.date}
+        onChange={(e) => {
+          const newAvailability = [...interviewRequest.availability];
+          newAvailability[index].date = e.target.value;
+          setInterviewRequest({ ...interviewRequest, availability: newAvailability });
+        }}
+        className="w-full border border-gray-300 rounded-lg px-3 py-2"
+        required
+      />
+
+      {/* Start Times List */}
+      {slot.startTimes.map((time, tIdx) => (
+        <div key={tIdx} className="flex gap-2 items-center">
+          <input
+            type="time"
+            value={time}
+            onChange={(e) => {
+              const updated = [...interviewRequest.availability];
+              updated[index].startTimes[tIdx] = e.target.value;
+              setInterviewRequest({ ...interviewRequest, availability: updated });
+            }}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2"
+            required
+          />
+          {slot.startTimes.length > 1 && (
+            <button
+              type="button"
+              onClick={() => {
+                const updated = [...interviewRequest.availability];
+                updated[index].startTimes.splice(tIdx, 1);
+                setInterviewRequest({ ...interviewRequest, availability: updated });
+              }}
+              className="text-sm text-red-500 hover:underline"
+            >
+              Remove
+            </button>
+          )}
+        </div>
+      ))}
+
+      {/* Add another start time */}
+      {slot.startTimes.length < 5 && (
+        <button
+          type="button"
+          onClick={() => {
+            const updated = [...interviewRequest.availability];
+            updated[index].startTimes.push('');
+            setInterviewRequest({ ...interviewRequest, availability: updated });
+          }}
+          className="text-indigo-600 text-sm hover:underline"
+        >
+          + Add Time Slot
+        </button>
       )}
+
+      {/* Remove entire date group */}
+      {interviewRequest.availability.length > 1 && (
+        <button
+          type="button"
+          onClick={() => {
+            const updated = interviewRequest.availability.filter((_, i) => i !== index);
+            setInterviewRequest({ ...interviewRequest, availability: updated });
+          }}
+          className="text-sm text-red-500 hover:underline mt-2 block"
+        >
+          Remove Date
+        </button>
+      )}
+    </div>
+  ))}
+
+  {/* Add new date group */}
+  {interviewRequest.availability.length < 3 && (
+    <button
+      type="button"
+      onClick={() =>
+        setInterviewRequest({
+          ...interviewRequest,
+          availability: [
+            ...interviewRequest.availability,
+            { date: '', startTimes: [''] }
+          ]
+        })
+      }
+      className="text-indigo-600 text-sm hover:underline"
+    >
+      + Add Another Date
+    </button>
+  )}
+</div>
+
+
+        {/* Submit */}
+        <button
+          type="submit"
+          className="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition"
+        >
+          Submit Request
+        </button>
+      </form>
+    </div>
+  </div>
+)}
+
     </div>
 
     </>
