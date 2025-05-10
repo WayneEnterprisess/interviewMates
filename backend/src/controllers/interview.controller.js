@@ -81,7 +81,15 @@ const createRequest = asyncHandler(async (req, res) => {
   });
 });
 
+const getPendingRequests = asyncHandler(async (req,res)=>{
+    //find all requests that are not scheduled
+    const pendingRequests = await Interview.find({status:"Not Scheduled"})
+    .populate('interviewee','fullName avatar email')
+    res.status(201).json({
+        success:true,
+        data:pendingRequests
+    })
+}) 
 
 
-
-export {createRequest}
+export {createRequest,getPendingRequests}

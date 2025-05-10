@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Star, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import Navbar from '../global/Navbar';
 import Footer from '../global/Footer';
 import { Sidebar } from '../global/Sidebar';
+import axios from 'axios';
+import { BASE_URL } from '../../utils/url';
 
 const mockRequests = [
   {
@@ -73,6 +75,7 @@ const mockRequests = [
 ];
 
 export function InterviewRequests() {
+  const [requests, setRequests] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const requestsPerPage = 3;
   const totalPages = Math.ceil(mockRequests.length / requestsPerPage);
@@ -80,6 +83,29 @@ export function InterviewRequests() {
   const indexOfLastRequest = currentPage * requestsPerPage;
   const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
   const currentRequests = mockRequests.slice(indexOfFirstRequest, indexOfLastRequest);
+
+
+
+  //get all requests
+  useEffect(() => {
+    const getRequests = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/api/interview-requests/pending-requests`,{
+          withCredentials:true
+        })
+        const reqArr = await res.data.data;
+        setRequests(reqArr);
+      } catch (error) {
+        console.error("error while getting pending requests", error.response?.data || error.message);
+      }
+    }
+    getRequests();
+  }, [])
+
+  useEffect(()=>{
+    console.log("requests array",requests)
+  },[requests])
+  
 
   const handleSchedule = (requestId, date) => {
     console.log(`Scheduling interview for request ${requestId} on ${date}`);
